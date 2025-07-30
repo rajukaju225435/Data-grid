@@ -20,11 +20,13 @@ const SectionBlock: React.FC<SectionBlockProps> = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
   const ref = useRef<HTMLDivElement>(null);
-
-  // Drag and drop
-  const [, drag] = useDrag({
+  const dragHandleRef = useRef<HTMLDivElement>(null);
+  const [{ isDragging }, drag, preview] = useDrag({
     type: "SECTION",
     item: { id: section.section_id, index },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
   });
 
   const [, drop] = useDrop({
@@ -40,10 +42,13 @@ const SectionBlock: React.FC<SectionBlockProps> = ({
       item.index = hoverIndex;
     },
   });
+  console.log("Sectionid", section.section_id);
+  console.log(moveSection, "moveSection ");
 
-  drag(drop(ref));
+  drag(dragHandleRef);
+  drop(ref);
+  preview(ref);
 
-  // Handle localStorage flag
   useEffect(() => {
     const updateExpanded = () => {
       const flag = localStorage.getItem("Flag");
@@ -53,6 +58,7 @@ const SectionBlock: React.FC<SectionBlockProps> = ({
         setExpandedKeys([]);
       }
     };
+    console.log(updateExpanded, "sectionnnnn");
     updateExpanded();
     window.addEventListener("storage", updateExpanded);
     return () => window.removeEventListener("storage", updateExpanded);
@@ -62,32 +68,49 @@ const SectionBlock: React.FC<SectionBlockProps> = ({
     setExpandedKeys(Array.isArray(keys) ? keys : [keys]);
   };
 
+  const toggleExpand = () => {
+    const key = section.section_id.toString();
+    if (expandedKeys.includes(key)) {
+      setExpandedKeys([]);
+    } else {
+      setExpandedKeys([key]);
+    }
+  };
+
   return (
-    <div ref={ref} className="mb-6 border rounded shadow bg-white">
-      <Collapse
+    <div
+      ref={ref}
+      className={`mb-6 border rounded shadow bg-white ${
+        isDragging ? "opacity-50" : ""
+      }`}
+    >
+      <Collapse 
         activeKey={expandedKeys}
         onChange={handleCollapseChange}
         expandIconPosition="start"
-        expandIcon={() => null} // Hide the default icon
+        expandIcon={() => null}
+          collapsible="icon"
         items={[
           {
             key: section.section_id.toString(),
             label: (
-              <div className="flex items-center justify-between w-full">
+              <div
+                className="flex items-center justify-between w-full"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div className="flex items-center gap-2">
-                  <MdDragIndicator className="cursor-grab rotate-90" />
-
-                  {/* Custom Expand Icon */}
                   <div
-                    className="flex items-center justify-center w-5 h-5"
+                    ref={dragHandleRef}
+                    className="cursor-grab active:cursor-grabbing"
+                  >
+                    <MdDragIndicator className="rotate-90" />
+                  </div>
+
+                  <div
+                    className="flex items-center justify-center w-5 h-5 cursor-pointer hover:bg-gray-200 rounded"
                     onClick={(e) => {
-                      e.stopPropagation(); // prevent collapse triggering twice
-                      const key = section.section_id.toString();
-                      if (expandedKeys.includes(key)) {
-                        setExpandedKeys([]);
-                      } else {
-                        setExpandedKeys([key]);
-                      }
+                      e.stopPropagation();
+                      toggleExpand();
                     }}
                   >
                     <CaretRightOutlined
@@ -96,18 +119,19 @@ const SectionBlock: React.FC<SectionBlockProps> = ({
                           ? 90
                           : 0
                       }
-                      style={{ fontSize: "14px" }}
+                    style={{ fontSize: "14px", transition: "transform 0.2s" }}
+                  
                     />
                   </div>
 
-                  <span className="font-semibold text-lg">
+                  <span className="font-semibold text-lg select-none" >
                     {section.section_name}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2 relative z-10">
                   <button
-                    className="p-2 rounded hover:bg-gray-200"
+                    className="p-2 rounded hover:bg-gray-200 transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
                       onViewSection(section);
@@ -118,7 +142,7 @@ const SectionBlock: React.FC<SectionBlockProps> = ({
 
                   <div className="relative">
                     <button
-                      className="p-2 rounded hover:bg-gray-200"
+                      className="p-2 rounded hover:bg-gray-200 transition-colors"
                       onClick={(e) => {
                         e.stopPropagation();
                         setDropdownOpen((prev) => !prev);
@@ -135,7 +159,7 @@ const SectionBlock: React.FC<SectionBlockProps> = ({
                             onAddItem(section.section_id);
                             setDropdownOpen(false);
                           }}
-                          className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                          className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
                         >
                           Add New Item
                         </button>
@@ -145,7 +169,7 @@ const SectionBlock: React.FC<SectionBlockProps> = ({
                             copysection(section.section_id);
                             setDropdownOpen(false);
                           }}
-                          className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                          className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
                         >
                           Copy Section
                         </button>

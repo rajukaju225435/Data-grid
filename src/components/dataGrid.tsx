@@ -198,6 +198,8 @@ const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing }) => {
   const moveSection = (fromIndex: number, toIndex: number) => {
     dispatch(actions.moveSectionRequest(fromIndex, toIndex));
   };
+
+  console.log(moveSection,"moveddddddddddd")
   // const onGridReady = (sectionId: number) => (params: any) => {
   //   gridApiRefs.current[sectionId] = params.api;
   //   rebindDropZones();

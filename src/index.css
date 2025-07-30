@@ -100,3 +100,9 @@ body {
   animation: rotate-clock-hand 2s linear infinite;
 }
 
+
+
+.ant-collapse-header .ant-collapse-collapsible-icon{
+    position: relative !important; 
+  z-index: 0 !important;
+}

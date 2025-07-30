@@ -4,21 +4,24 @@ import * as actions from "./actions";
 import type { Item, Section, GridState } from "./types";
 
 function fetchGridDataApi(): Promise<{ items: Item[]; sections: Section[] }> {
-  return fetch("/data-small.json")
-    .then((res) => res.json())
-    .then((data) => {
-      const items: Item[] = data.data.EstimateItem || [];
-      const map = new Map<number, string>();
-      items.forEach((i) => map.set(i.section_id, i.section_name));
+  return (
+    fetch("/data-small.json")
+      // return fetch("/data.json")
+      .then((res) => res.json())
+      .then((data) => {
+        const items: Item[] = data.data.EstimateItem || [];
+        const map = new Map<number, string>();
+        items.forEach((i) => map.set(i.section_id, i.section_name));
 
-      const sections: Section[] = Array.from(map, ([id, name]) => ({
-        section_id: id,
-        section_name: name,
-        items: [],
-      }));
+        const sections: Section[] = Array.from(map, ([id, name]) => ({
+          section_id: id,
+          section_name: name,
+          items: [],
+        }));
 
-      return { items, sections };
-    });
+        return { items, sections };
+      })
+  );
 }
 function groupItems(items: Item[], sections: Section[]): Section[] {
   const byId: Record<number, Item[]> = {};
@@ -32,8 +35,34 @@ function groupItems(items: Item[], sections: Section[]): Section[] {
   }));
 }
 
+// function* fetchGridDataSaga() {
+//   try {
+//     const { items, sections } = yield call(fetchGridDataApi);
+//     const grouped: Section[] = yield call(groupItems, items, sections);
+//     yield put(actions.fetchGridDataSuccess({ items, groupedItems: grouped }));
+//   } catch (err: any) {
+//     yield put(actions.fetchGridDataFailure(err.message));
+//   }
+// }
 function* fetchGridDataSaga() {
   try {
+    const groupedItems: Section[] = yield select(
+      (state: { grid: GridState }) => state.grid.groupedItems
+    );
+
+    if (groupedItems && groupedItems.length > 0) {
+      yield put({
+        type: types.FETCH_GRID_DATA_SUCCESS,
+        payload: {
+          items: [],
+          groupedItems,
+        },
+      });
+      0;
+      console.log("Skipping fetch");
+      return;
+    }
+
     const { items, sections } = yield call(fetchGridDataApi);
     const grouped: Section[] = yield call(groupItems, items, sections);
     yield put(actions.fetchGridDataSuccess({ items, groupedItems: grouped }));
@@ -116,16 +145,16 @@ function* handleDeleteItem({
   yield put(actions.deleteItemSuccess(payload.sectionId, payload.itemId));
 }
 
-function* handleMoveSection({
-  payload,
-}: ReturnType<typeof actions.moveSectionRequest>): Generator<any, void, any> {
-  const { fromIndex, toIndex } = payload;
-  const state: any = yield select((s) => s.grid.groupedItems);
-  const updated = [...state];
-  const [movedItem] = updated.splice(fromIndex, 1);
-  updated.splice(toIndex, 0, movedItem);
-  yield put(actions.moveSectionSuccess(updated));
-}
+  function* handleMoveSection({
+    payload,
+  }: ReturnType<typeof actions.moveSectionRequest>): Generator<any, void, any> {
+    const { fromIndex, toIndex } = payload;
+    const state: any = yield select((s) => s.grid.groupedItems);
+    const updated = [...state];
+    const [movedItem] = updated.splice(fromIndex, 1);
+    updated.splice(toIndex, 0, movedItem);
+    yield put(actions.moveSectionSuccess(updated));
+  }
 function* handleMoveRowBetweenSections(
   action: ReturnType<typeof actions.moveRowBetweenSections>
 ): Generator<any, void, any> {
