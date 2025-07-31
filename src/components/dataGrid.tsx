@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
 import {
   ModuleRegistry,
@@ -6,7 +6,6 @@ import {
   type ColDef,
 } from "ag-grid-community";
 import { FaEye, FaTrash, FaEyeSlash } from "react-icons/fa6";
-
 import * as actions from "../redux/actions";
 import { useGridData } from "../hooks/useGridData";
 import { useSectionManagement } from "../hooks/useSectionManagement";
@@ -14,7 +13,6 @@ import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
 import { useSidebar } from "../hooks/useSidebar";
 import { useGridApi } from "../hooks/useGridApis";
 import { useFilters } from "../hooks/useFilters";
-
 import SectionBlock from "./SectionBlock";
 import MarkupToggle from "./MarkupToggle";
 import ZeroItemsFilter from "./ZeroItemsFilter";
@@ -22,7 +20,6 @@ import ScrollToTop from "./ScrollToTop";
 import CustomTooltip from "./CustomTooltip";
 import NoRecords from "./NoRecords";
 import { useDragAndDrop } from "../hooks/useDragAndDrop";
-// import { Tooltip } from "antd";
 
 const AddItemDropdown = lazy(() => import("./AddItemDropdown"));
 const Sidebar = lazy(() => import("./Sidebar"));
@@ -74,11 +71,9 @@ const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing }) => {
     handleInputChange,
   } = useFilters();
   const { gridApiRefs } = useGridApi(groupedItems);
-  const { rebindDropZones } = useDragAndDrop(gridApiRefs);
-
+  const { rebindDropZones, cleanupDropZones } = useDragAndDrop(gridApiRefs);
   const CurrencyCellRenderer = (params: any) =>
     params.value ? `₹${Number(params.value).toLocaleString()}` : "";
-
   const ViewButtonRenderer = (params: any) => (
     <button
       onClick={(e) => {
@@ -102,6 +97,7 @@ const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing }) => {
               params.data.item_id
             )
           );
+          cleanupDropZones();
         }
       }}
       className="text-red-500 hover:text-red-700 transition-colors duration-200"
@@ -193,29 +189,43 @@ const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing }) => {
       col.field && !skipTooltipFields.includes(col.field);
     return isTooltipAllowed ? { ...col, cellRenderer: CustomTooltip } : col;
   });
-  //tooltipValueGetter: (params) => params.value
 
   const moveSection = (fromIndex: number, toIndex: number) => {
     dispatch(actions.moveSectionRequest(fromIndex, toIndex));
   };
-
-  console.log(moveSection,"moveddddddddddd")
-  // const onGridReady = (sectionId: number) => (params: any) => {
-  //   gridApiRefs.current[sectionId] = params.api;
-  //   rebindDropZones();
-  // };
 
   const onGridReady = (sectionId: number) => (params: any) => {
     gridApiRefs.current[sectionId] = params.api;
 
     params.api.addEventListener("gridPreDestroy", () => {
       delete gridApiRefs.current[sectionId];
+      setTimeout(rebindDropZones, 0);
     });
 
     setTimeout(() => {
       rebindDropZones();
-    }, 0);
+    }, 100);
   };
+  useEffect(() => {
+    const displayedIds = displayedSections.map((s) => s.section_id);
+    const groupedIds = groupedItems.map((s) => s.section_id);
+    const deletedIds = displayedIds.filter((id) => !groupedIds.includes(id));
+    if (deletedIds.length > 0) {
+      setDisplayedSections((prev) =>
+        prev.filter((s) => !deletedIds.includes(s.section_id))
+      );
+    }
+  }, [groupedItems, displayedSections, setDisplayedSections]);
+  useEffect(() => {
+    const displayedIds = displayedSections.map((s) => s.section_id);
+    const groupedIds = groupedItems.map((s) => s.section_id);
+    const deletedIds = displayedIds.filter((id) => !groupedIds.includes(id));
+    if (deletedIds.length > 0) {
+      setDisplayedSections((prev) =>
+        prev.filter((s) => !deletedIds.includes(s.section_id))
+      );
+    }
+  }, [groupedItems, displayedSections, setDisplayedSections]);
   const onCellValueChanged = (params: any) => {
     if (!params.data?.id) return;
 
@@ -223,6 +233,9 @@ const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing }) => {
       actions.updateItemInSection(filterBySectionName || "", params.data)
     );
   };
+  const sectionsToRender = filterBySectionName
+    ? groupedItems.filter((s) => s.section_name === filterBySectionName)
+    : displayedSections;
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -290,7 +303,7 @@ const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing }) => {
                 section={section}
                 index={index}
                 moveSection={moveSection}
-                displayedSections={displayedSections}
+                displayedSections={sectionsToRender}
                 expandedKeys={expandedKeys}
                 setExpandedKeys={setExpandedKeys}
                 onViewSection={(data) => openSidebar("sectionDetails", data)}
@@ -318,15 +331,13 @@ const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing }) => {
                     }}
                     domLayout="autoHeight"
                     rowSelection="multiple"
-                    // tooltipShowDelay={100}
-                    // tooltipHideDelay={300}
                     rowDragManaged
                     rowDragMultiRow
                     animateRows
                     suppressRowClickSelection
                     getRowId={(params) => params.data.item_id}
                     onGridReady={onGridReady(section.section_id)}
-                    key={`${section.section_id}-${section.items.length}`}
+                    key={section.section_id}
                     enableBrowserTooltips
                     onSelectionChanged={(e) => {
                       setShowAllCheckboxes(e.api.getSelectedRows().length > 0);

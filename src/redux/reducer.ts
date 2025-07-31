@@ -15,7 +15,6 @@ export default function gridReducer(
   action: GridAction
 ): GridState {
   switch (action.type) {
-    // FETCH
     case types.FETCH_GRID_DATA_REQUEST:
       return { ...state, loading: true, error: null };
 
@@ -30,7 +29,6 @@ export default function gridReducer(
     case types.FETCH_GRID_DATA_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
-    // ADD SECTION
     case types.ADD_SECTION_SUCCESS:
       return {
         ...state,
@@ -38,7 +36,6 @@ export default function gridReducer(
         displayedSections: [action.payload, ...state.displayedSections],
       };
 
-    // UPDATE SECTION
     case types.UPDATE_SECTION_SUCCESS:
       return {
         ...state,
@@ -49,7 +46,6 @@ export default function gridReducer(
         ),
       };
 
-    // DELETE SECTION
     case types.DELETE_SECTION_SUCCESS:
       return {
         ...state,
@@ -58,7 +54,6 @@ export default function gridReducer(
         ),
       };
 
-    // COPY SECTION
     case types.COPY_SECTION_SUCCESS:
       const { newSection, insertAfterId } = action.payload;
       const idx = state.groupedItems.findIndex(
@@ -68,7 +63,6 @@ export default function gridReducer(
       arr.splice(idx + 1, 0, newSection);
       return { ...state, groupedItems: arr };
 
-    // ADD ITEM
     case types.ADD_ITEM_SUCCESS:
       return {
         ...state,
@@ -79,7 +73,6 @@ export default function gridReducer(
         ),
       };
 
-    // DELETE ITEM
     case types.DELETE_ITEM_SUCCESS:
       return {
         ...state,

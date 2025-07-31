@@ -21,7 +21,6 @@ const Dashboard = () => {
 
   return (
     <div className="relative">
-      {/* Dropdown */}
       <div className="m-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <label className="mr-2 font-semibold">Select Table:</label>
@@ -56,7 +55,6 @@ const Dashboard = () => {
         )}
       </div>
 
-      {/* Pie Chart */}
       <div className="max-w-4xl mx-auto p-4 boarder-black bg-white shadow-md shadow-gray-800 rounded-lg">
         <PieChart selectedTable={selectedTable} />
       </div>

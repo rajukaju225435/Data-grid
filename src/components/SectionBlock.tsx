@@ -42,8 +42,6 @@ const SectionBlock: React.FC<SectionBlockProps> = ({
       item.index = hoverIndex;
     },
   });
-  console.log("Sectionid", section.section_id);
-  console.log(moveSection, "moveSection ");
 
   drag(dragHandleRef);
   drop(ref);
@@ -58,7 +56,6 @@ const SectionBlock: React.FC<SectionBlockProps> = ({
         setExpandedKeys([]);
       }
     };
-    console.log(updateExpanded, "sectionnnnn");
     updateExpanded();
     window.addEventListener("storage", updateExpanded);
     return () => window.removeEventListener("storage", updateExpanded);

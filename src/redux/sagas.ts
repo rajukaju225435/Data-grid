@@ -6,7 +6,7 @@ import type { Item, Section, GridState } from "./types";
 function fetchGridDataApi(): Promise<{ items: Item[]; sections: Section[] }> {
   return (
     fetch("/data-small.json")
-      // return fetch("/data.json")
+      // fetch("/data.json")
       .then((res) => res.json())
       .then((data) => {
         const items: Item[] = data.data.EstimateItem || [];
@@ -35,15 +35,6 @@ function groupItems(items: Item[], sections: Section[]): Section[] {
   }));
 }
 
-// function* fetchGridDataSaga() {
-//   try {
-//     const { items, sections } = yield call(fetchGridDataApi);
-//     const grouped: Section[] = yield call(groupItems, items, sections);
-//     yield put(actions.fetchGridDataSuccess({ items, groupedItems: grouped }));
-//   } catch (err: any) {
-//     yield put(actions.fetchGridDataFailure(err.message));
-//   }
-// }
 function* fetchGridDataSaga() {
   try {
     const groupedItems: Section[] = yield select(
@@ -59,7 +50,6 @@ function* fetchGridDataSaga() {
         },
       });
       0;
-      console.log("Skipping fetch");
       return;
     }
 
@@ -145,16 +135,16 @@ function* handleDeleteItem({
   yield put(actions.deleteItemSuccess(payload.sectionId, payload.itemId));
 }
 
-  function* handleMoveSection({
-    payload,
-  }: ReturnType<typeof actions.moveSectionRequest>): Generator<any, void, any> {
-    const { fromIndex, toIndex } = payload;
-    const state: any = yield select((s) => s.grid.groupedItems);
-    const updated = [...state];
-    const [movedItem] = updated.splice(fromIndex, 1);
-    updated.splice(toIndex, 0, movedItem);
-    yield put(actions.moveSectionSuccess(updated));
-  }
+function* handleMoveSection({
+  payload,
+}: ReturnType<typeof actions.moveSectionRequest>): Generator<any, void, any> {
+  const { fromIndex, toIndex } = payload;
+  const state: any = yield select((s) => s.grid.groupedItems);
+  const updated = [...state];
+  const [movedItem] = updated.splice(fromIndex, 1);
+  updated.splice(toIndex, 0, movedItem);
+  yield put(actions.moveSectionSuccess(updated));
+}
 function* handleMoveRowBetweenSections(
   action: ReturnType<typeof actions.moveRowBetweenSections>
 ): Generator<any, void, any> {
@@ -169,19 +159,14 @@ function* handleMoveRowBetweenSections(
 
   if (!fromSection || !toSection) return;
 
-  // Remove from old section
   const filteredFromItems = fromSection.items.filter(
     (item) => !movedData.some((m) => m.item_id === item.item_id)
   );
-
-  // Update section_id for moved items
   const updatedMovedItems = movedData.map((item) => ({
     ...item,
     section_id: toSectionId,
     section_name: toSection.section_name,
   }));
-
-  // Insert into new section at overIndex
   let updatedToItems = toSection.items.filter(
     (item) => !movedData.some((m) => m.item_id === item.item_id)
   );
@@ -211,12 +196,10 @@ function* handleMoveRowBetweenSections(
 export default function* rootSaga() {
   yield all([
     takeLatest(types.FETCH_GRID_DATA_REQUEST, fetchGridDataSaga),
-
     takeLatest(types.ADD_SECTION_REQUEST, handleAddSection),
     takeLatest(types.UPDATE_SECTION_REQUEST, handleUpdateSection),
     takeLatest(types.DELETE_SECTION_REQUEST, handleDeleteSection),
     takeLatest(types.COPY_SECTION_REQUEST, handleCopySection),
-
     takeLatest(types.ADD_ITEM_REQUEST, handleAddItem),
     takeLatest(types.DELETE_ITEM_REQUEST, handleDeleteItem),
     takeLatest(types.MOVE_SECTION_REQUEST, handleMoveSection),

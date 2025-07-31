@@ -107,7 +107,6 @@ const EstimatesDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f6f7ef]">
-      {/* Header */}
       <div className="bg-white border-b shadow-md">
         <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
           <div>
@@ -128,12 +127,8 @@ const EstimatesDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Content */}
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
-        {/* Progress Bar */}
         <ProgressBar stats={getStatusStats()} />
-
-        {/* Estimates Table Block */}
         <div className="bg-white rounded-xl shadow p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-800">
@@ -151,7 +146,6 @@ const EstimatesDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Estimates Table */}
           <EstimateTable
             estimates={filteredEstimates}
             onView={(estimate) => {
@@ -167,7 +161,6 @@ const EstimatesDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Sidebar */}
       <EstimateSidebar
         isOpen={sidebarOpen}
         onClose={() => {
@@ -182,7 +175,7 @@ const EstimatesDashboard: React.FC = () => {
             addEstimate(data as Omit<Estimate, "id" | "createdAt">);
           }
           setSidebarOpen(false);
-          setEditingEstimate(null);
+          setEditingEstimate(null); 
         }}
       />
     </div>

@@ -11,7 +11,7 @@ import { ProgressReportPage } from "./components/Progress/ProgressReportPage";
 import EstimatesDashboard from "./components/Progress/EstimatesDashboard";
 import Files from "./components/Sidebar/Files";
 import TimecardApp from "./components/Time Cards/TimecardApp";
-
+import "./index.css";
 const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedPageTitle, setSelectedPageTitle] = useState("My Dashboard");

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-display: swap;
 }
 
@@ -38,12 +38,12 @@ body {
 }
 
 .section-block:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .section-block.dragging {
   opacity: 0.5;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 /* Loading indicator styles */
@@ -83,8 +83,8 @@ body {
 }
 
 .react-calendar__tile--active {
-    background: #e94f37  !important;
-    color: white;
+  background: #e94f37 !important;
+  color: white;
 }
 
 @keyframes rotate-clock-hand {
@@ -100,9 +100,12 @@ body {
   animation: rotate-clock-hand 2s linear infinite;
 }
 
+.antd .ant-collapse-header .ant-collapse-collapsible-icon {
+  position: relative !important;
+  z-index: 1000 !important;
+}
 
-
-.ant-collapse-header .ant-collapse-collapsible-icon{
-    position: relative !important; 
-  z-index: 0 !important;
+div[class~="ant-collapse-header"][class~="ant-collapse-collapsible-icon"] {
+  position: relative !important;
+  z-index: 1000 !important;
 }
