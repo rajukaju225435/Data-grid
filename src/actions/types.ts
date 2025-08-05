@@ -321,6 +321,7 @@ export interface SectionBlockProps {
   expandedKeys: string[];
   setExpandedKeys: (keys: string[]) => void;
   onUnmount?: () => void;
+  hideActions?: boolean; // <-- Add this
 }
 
 export interface UnifiedSidebarProps {

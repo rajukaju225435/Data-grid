@@ -3,14 +3,23 @@ import { useSelector } from "react-redux";
 import PieChart from "./piechart";
 import DataGrid from "../dataGrid";
 import type { RootState } from "../../redux/store";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { fetchGridDataRequest } from "../../redux/actions";
 
 const Dashboard = () => {
   const [selectedTable, setSelectedTable] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-
+  const dispatch = useDispatch();
   const { groupedItems } = useSelector((state: RootState) => state.grid);
   const tableNames = groupedItems.map((section) => section.section_name);
+  console.log(groupedItems);
 
+  useEffect(() => {
+    if (groupedItems.length === 0) {
+      dispatch(fetchGridDataRequest());
+    }
+  }, []);
   const handleEditClick = () => {
     setIsEditing(true);
   };
@@ -18,6 +27,10 @@ const Dashboard = () => {
   const handleSaveClick = () => {
     setIsEditing(false);
   };
+
+  if (groupedItems.length === 0) {
+    return <div className="text-center mt-10">Loading...</div>;
+  }
 
   return (
     <div className="relative">
@@ -61,7 +74,7 @@ const Dashboard = () => {
 
       {selectedTable && (
         <div className="mt-8">
-          <DataGrid filterBySectionName={selectedTable} isEditing={isEditing} />
+          <DataGrid filterBySectionName={selectedTable} isEditing={isEditing} showOnlyTable={true} hideActions={true}/>
         </div>
       )}
     </div>

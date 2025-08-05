@@ -5,8 +5,8 @@ import type { Item, Section, GridState } from "./types";
 
 function fetchGridDataApi(): Promise<{ items: Item[]; sections: Section[] }> {
   return (
-    fetch("/data-small.json")
-      // fetch("/data.json")
+    // fetch("/data-small.json")
+      fetch("/data.json")
       .then((res) => res.json())
       .then((data) => {
         const items: Item[] = data.data.EstimateItem || [];
@@ -92,7 +92,7 @@ function* handleCopySection({
 }: ReturnType<typeof actions.copySectionRequest>) {
   const srcId: number = payload;
   const sections: Section[] = yield select(
-    (s: { grid: GridState }) => s.grid.groupedItems
+    (s: { grid: GridState }) => s.grid.groupedItems  
   );
   const idx = sections.findIndex((s) => s.section_id === srcId);
   if (idx === -1) return;

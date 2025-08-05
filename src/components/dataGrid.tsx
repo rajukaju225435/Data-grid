@@ -29,9 +29,10 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 interface Props {
   filterBySectionName?: string;
   isEditing?: boolean;
+  showOnlyTable?: boolean; 
 }
 
-const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing }) => {
+const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing ,showOnlyTable , hideActions = false}) => {
   const { groupedItems, loading, error, dispatch } = useGridData();
 
   const {
@@ -241,7 +242,12 @@ const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing }) => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    
+    <div className="relative ">
+      
+    {/* <div className="relative min-h-screen overflow-hidden"> */}
+
+    {!showOnlyTable && (
       <div className="mb-8 flex items-center justify-between">
         <div className="flex items-center gap-2 justify-between w-full">
           <div className="flex items-center">
@@ -264,6 +270,8 @@ const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing }) => {
               selectedFilter={selectedZeroFilter}
               setSelectedFilter={setSelectedZeroFilter}
             />
+
+            {!showOnlyTable && (
             <Suspense
               fallback={<div className="text-sm text-gray-400">Loading...</div>}
             >
@@ -273,15 +281,18 @@ const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing }) => {
                   setSidebarOpen(true);
                 }}
               />
-            </Suspense>
+            </Suspense>)}
           </div>
         </div>
       </div>
-
+)}
       <div
-        className={`overflow-x-hidden h-screen overflow-scroll transition-opacity duration-100 ${
+        className={`overflow-x-hidden  transition-opacity duration-100 z-[-1]${
           sidebarOpen ? "backdrop-blur-sm" : ""
         }`}
+        // className={`overflow-x-hidden h-screen overflow-scroll transition-opacity duration-100 ${
+        //   sidebarOpen ? "backdrop-blur-sm" : ""
+        // }`}
       >
         {(filterBySectionName
           ? groupedItems.filter((s) => s.section_name === filterBySectionName)
@@ -300,6 +311,7 @@ const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing }) => {
           return (
             <div key={section.section_id} className="section-block-wrapper">
               <SectionBlock
+               hideActions={hideActions} 
                 section={section}
                 index={index}
                 moveSection={moveSection}
@@ -352,7 +364,7 @@ const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing }) => {
           );
         })}
 
-        {displayedSections.length < groupedItems.length && (
+        { !showOnlyTable && displayedSections.length < groupedItems.length && (
           <div
             ref={loadingDivRef}
             className={`text-center py-4 ${

@@ -22,7 +22,7 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
   estimate,
   onBack,
   onUpdate,
-  onDelete,
+  onDelete, 
   onEdit,
 }) => {
   const [progress, setProgress] = useState(estimate.progress || 0);

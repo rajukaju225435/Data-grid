@@ -75,7 +75,7 @@ const PieChart: React.FC<DonutChartProps> = ({ selectedTable }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 max-w-6xl mx-auto">
+    <div className="bg-white rounded-lg p-6 max-w-6xl mx-auto">
       {selectedTable ? (
         <>
           <h2 className="text-xl font-semibold mb-6 text-center">

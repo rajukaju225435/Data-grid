@@ -109,3 +109,12 @@ div[class~="ant-collapse-header"][class~="ant-collapse-collapsible-icon"] {
   position: relative !important;
   z-index: 1000 !important;
 }
+
+button{
+  cursor: pointer !important;
+}
+
+.react-calendar__tile--now {
+    background: #0000000a !important;
+    color: black !important;
+}

@@ -46,7 +46,7 @@ const Sidebar = ({ isOpen, onClose, onSelect }: SidebarProps) => {
         aria-hidden="true"
       />
       <aside
-        className="fixed top-0 left-0 h-full w-64 bg-[#393e41] text-white transition-transform duration-300 z-50 shadow-lg"
+        className="fixed top-0 left-0 h-full w-64 bg-[#393e41] text-white transition-transform duration-300 z-[99999] shadow-lg"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

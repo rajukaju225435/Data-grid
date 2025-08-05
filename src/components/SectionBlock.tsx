@@ -16,6 +16,7 @@ const SectionBlock: React.FC<SectionBlockProps> = ({
   onAddItem,
   copysection,
   deletesection,
+  hideActions,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
@@ -81,12 +82,12 @@ const SectionBlock: React.FC<SectionBlockProps> = ({
         isDragging ? "opacity-50" : ""
       }`}
     >
-      <Collapse 
+      <Collapse
         activeKey={expandedKeys}
         onChange={handleCollapseChange}
         expandIconPosition="start"
         expandIcon={() => null}
-          collapsible="icon"
+        collapsible="icon"
         items={[
           {
             key: section.section_id.toString(),
@@ -96,12 +97,14 @@ const SectionBlock: React.FC<SectionBlockProps> = ({
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center gap-2">
-                  <div
-                    ref={dragHandleRef}
-                    className="cursor-grab active:cursor-grabbing"
-                  >
-                    <MdDragIndicator className="rotate-90" />
-                  </div>
+                  {!hideActions && (
+                    <div
+                      ref={dragHandleRef}
+                      className="cursor-grab active:cursor-grabbing"
+                    >
+                      <MdDragIndicator className="rotate-90" />
+                    </div>
+                  )}
 
                   <div
                     className="flex items-center justify-center w-5 h-5 cursor-pointer hover:bg-gray-200 rounded"
@@ -116,80 +119,80 @@ const SectionBlock: React.FC<SectionBlockProps> = ({
                           ? 90
                           : 0
                       }
-                    style={{ fontSize: "14px", transition: "transform 0.2s" }}
-                  
+                      style={{ fontSize: "14px", transition: "transform 0.2s" }}
                     />
                   </div>
 
-                  <span className="font-semibold text-lg select-none" >
+                  <span className="font-semibold text-lg select-none">
                     {section.section_name}
                   </span>
                 </div>
-
-                <div className="flex items-center gap-2 relative z-10">
-                  <button
-                    className="p-2 rounded hover:bg-gray-200 transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onViewSection(section);
-                    }}
-                  >
-                    <FaEye className="text-lg" />
-                  </button>
-
-                  <div className="relative">
+                {!hideActions && (
+                  <div className="flex items-center gap-2 relative z-10">
                     <button
                       className="p-2 rounded hover:bg-gray-200 transition-colors"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setDropdownOpen((prev) => !prev);
+                        onViewSection(section);
                       }}
                     >
-                      <FaPlus className="text-lg" />
+                      <FaEye className="text-lg" />
                     </button>
 
-                    {dropdownOpen && (
-                      <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow ">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onAddItem(section.section_id);
-                            setDropdownOpen(false);
-                          }}
-                          className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
-                        >
-                          Add New Item
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            copysection(section.section_id);
-                            setDropdownOpen(false);
-                          }}
-                          className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
-                        >
-                          Copy Section
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (
-                              window.confirm(
-                                "Are you sure you want to delete this section?"
-                              )
-                            ) {
-                              deletesection(section.section_id);
+                    <div className="relative">
+                      <button
+                        className="p-2 rounded hover:bg-gray-200 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDropdownOpen((prev) => !prev);
+                        }}
+                      >
+                        <FaPlus className="text-lg" />
+                      </button>
+
+                      {dropdownOpen && (
+                        <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow ">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onAddItem(section.section_id);
                               setDropdownOpen(false);
-                            }
-                          }}
-                          className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                        >
-                          Delete Section
-                        </button>
-                      </div>
-                    )}
+                            }}
+                            className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
+                          >
+                            Add New Item
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              copysection(section.section_id);
+                              setDropdownOpen(false);
+                            }}
+                            className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors"
+                          >
+                            Copy Section
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (
+                                window.confirm(
+                                  "Are you sure you want to delete this section?"
+                                )
+                              ) {
+                                deletesection(section.section_id);
+                                setDropdownOpen(false);
+                              }
+                            }}
+                            className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                          >
+                            Delete Section
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             ),
             children: <div>{children}</div>,

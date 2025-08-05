@@ -53,7 +53,7 @@ const Sidebar = ({
               const isToday =
                 dateStr === new Date().toLocaleDateString("en-CA");
               if (isSelected) return "bg-[#e94f37] text-white rounded";
-              if (isToday) return "text-white rounded";
+              if (isToday) return "text-white rounded ";
               return "";
             }}
           />
