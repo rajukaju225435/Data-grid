@@ -3,7 +3,7 @@ import { Upload, Image } from "antd";
 import { PlusOutlined, EyeOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { UploadFile } from "antd/es/upload/interface";
 import type { RcFile } from "antd/es/upload";
-
+import { Modal } from "antd";
 const getBase64 = (file: RcFile): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -30,11 +30,30 @@ const FileUpload: React.FC = () => {
     setFileList(updatedFiles);
   };
 
-  const removeFile = (index: number) => {
-    alert("Are you sure you want to delete this file?");
-    setFileList((prev) => prev.filter((_, i) => i !== index));
+  const removeFile = (index: any) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this File",
+      content: "This action cannot be undone.",
+      okText: "Yes, Delete",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk() {
+        setFileList((prev) => prev.filter((_, i) => i !== index));
+      },
+    });
   };
-
+  const removeAllFile = () => {
+    Modal.confirm({
+      title: "Are you sure you want to delete All File?",
+      content: "This action cannot be undone.",
+      okText: "Yes, Delete",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk() {
+        setFileList([]);
+      },
+    });
+  };
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview && file.originFileObj) {
       file.preview = await getBase64(file.originFileObj as RcFile);
@@ -45,9 +64,7 @@ const FileUpload: React.FC = () => {
 
   return (
     <>
-      <div className="flex flex-wrap gap-4 items-start">
-        {/* Upload Button */}
-
+      <div className="flex flex-wrap gap-4 items-start relative ">
         <Upload
           accept="image/*"
           multiple
@@ -57,13 +74,24 @@ const FileUpload: React.FC = () => {
           beforeUpload={() => false}
           showUploadList={false}
         >
-          <div className="w-24 h-24 flex flex-col items-center justify-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 cursor-pointer">
+          <div className="w-24 h-24 flex flex-col items-center justify-center +bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 cursor-pointer">
             <PlusOutlined className="text-2xl text-gray-400 mb-1" />
             <div className="text-xs text-gray-500">Upload</div>
           </div>
         </Upload>
+        {fileList.length > 0 && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              removeAllFile();
+            }}
+            className="absolute -top-17 right-40 mt-2 mr-2 px-3 py-1 bg-red-800 text-white rounded hover:bg-red-700 transition-all z-20 font-bold"
+          >
+            <DeleteOutlined className="mr-1" />
+            all
+          </button>
+        )}
 
-        {/* Image Thumbnails */}
         {fileList.map((file, index) => (
           <div
             key={file.uid || index}
@@ -102,7 +130,6 @@ const FileUpload: React.FC = () => {
         ))}
       </div>
 
-      {/* Preview Modal */}
       <Image
         style={{ display: "none" }}
         preview={{

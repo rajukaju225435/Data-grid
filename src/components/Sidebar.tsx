@@ -40,13 +40,10 @@ const Sidebar: React.FC<UnifiedSidebarProps> = ({
   onAddItem,
   currentSectionId,
 }) => {
-  // States for Add Section
   const [sectionName, setSectionName] = useState("");
   const [description, setDescription] = useState("");
   const [isOptional, setIsOptional] = useState(false);
   const [error, setError] = useState("");
-
-  // States for Section Details
   const [isEditing, setIsEditing] = useState(false);
   const [editedSectionName, setEditedSectionName] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
@@ -58,8 +55,6 @@ const Sidebar: React.FC<UnifiedSidebarProps> = ({
     unit_cost: "",
     item_type_display_name: "",
   });
-
-  // Reset states when sidebar closes
   useEffect(() => {
     if (!isOpen) {
       setSectionName("");
@@ -70,7 +65,6 @@ const Sidebar: React.FC<UnifiedSidebarProps> = ({
     }
   }, [isOpen]);
 
-  // Initialize editing states when section data changes
   useEffect(() => {
     if (sectionData) {
       setEditedSectionName(sectionData.section_name || "");

@@ -11,7 +11,7 @@ export const useIntersectionObserver = (
     observerRef.current = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && condition) {
-          onIntersect(); // jab screen me dikhe aur condition true ho
+          onIntersect(); 
         }
       },
       {

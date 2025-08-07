@@ -5,7 +5,7 @@ import type { ApexOptions } from "apexcharts";
 import type { RootState } from "../../redux/store";
 
 interface DonutChartProps {
-  selectedTable: string;
+  selectedTable: any;
 }
 
 const PieChart: React.FC<DonutChartProps> = ({ selectedTable }) => {
@@ -83,7 +83,6 @@ const PieChart: React.FC<DonutChartProps> = ({ selectedTable }) => {
           </h2>
 
           <div className="flex flex-col md:flex-row md:items-start md:space-x-6">
-            {/* Pie Chart Left Side */}
             <div className="w-full md:w-2/3">
               <Chart
                 options={options}

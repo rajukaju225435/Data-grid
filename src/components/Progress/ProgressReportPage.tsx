@@ -11,28 +11,17 @@ export const ProgressReportPage: React.FC = () => {
     "estimates",
     []
   );
-
   const estimate = estimates.find((est) => est.id === id);
-
   const handleBack = () => {
     navigate("/additem");
   };
-
   const handleUpdate = (id: string, updates: Partial<Estimate>) => {
     setEstimates((prev) =>
       prev.map((est) => (est.id === id ? { ...est, ...updates } : est))
     );
   };
-
   const handleDelete = (id: string) => {
-    if (window.confirm("Are you sure you want to delete this estimate?")) {
-      setEstimates((prev) => prev.filter((est) => est.id !== id));
-      navigate("/additem");
-    }
-  };
-
-  const handleEdit = (estimate: Estimate) => {
-    navigate("/additem", { state: { editingEstimate: estimate } });
+    setEstimates((prev) => prev.filter((est) => est.id !== id));
   };
 
   if (!estimate) {
@@ -59,7 +48,6 @@ export const ProgressReportPage: React.FC = () => {
       onBack={handleBack}
       onUpdate={handleUpdate}
       onDelete={handleDelete}
-      onEdit={handleEdit}
     />
   );
 };

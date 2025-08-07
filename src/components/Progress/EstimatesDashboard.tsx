@@ -6,6 +6,7 @@ import { EstimateSidebar } from "./EstimateSidebar";
 import { ProgressBar } from "./ProgressBar";
 import { ProgressReport } from "./ProgressReport";
 import { useLocalStorage } from "./useLocalStorageDetails";
+import { Modal } from "antd";
 
 const EstimatesDashboard: React.FC = () => {
   const [estimates, setEstimates] = useLocalStorage<Estimate[]>(
@@ -41,13 +42,24 @@ const EstimatesDashboard: React.FC = () => {
   };
 
   const deleteEstimate = (id: string) => {
-    if (window.confirm("Are you sure you want to delete this estimate?")) {
-      setEstimates((prev) => prev.filter((est) => est.id !== id));
-      if (selectedEstimate && selectedEstimate.id === id) {
-        setCurrentView("dashboard");
-        setSelectedEstimate(null);
-      }
+    setEstimates((prev) => prev.filter((est) => est.id !== id));
+    if (selectedEstimate && selectedEstimate.id === id) {
+      setCurrentView("dashboard");
+      setSelectedEstimate(null);
     }
+  };
+
+  const showDeleteConfirm = (id: string) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this estimate?",
+      content: "This action cannot be undone.",
+      okText: "Yes, Delete",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk() {
+        deleteEstimate(id);
+      },
+    });
   };
 
   const filteredEstimates = estimates.filter(
@@ -97,10 +109,6 @@ const EstimatesDashboard: React.FC = () => {
         }}
         onUpdate={updateEstimate}
         onDelete={deleteEstimate}
-        onEdit={(estimate) => {
-          setEditingEstimate(estimate);
-          setCurrentView("dashboard");
-        }}
       />
     );
   }
@@ -156,7 +164,7 @@ const EstimatesDashboard: React.FC = () => {
               setEditingEstimate(estimate);
               setSidebarOpen(true);
             }}
-            onDelete={deleteEstimate}
+            onDelete={showDeleteConfirm}
           />
         </div>
       </div>
@@ -175,7 +183,7 @@ const EstimatesDashboard: React.FC = () => {
             addEstimate(data as Omit<Estimate, "id" | "createdAt">);
           }
           setSidebarOpen(false);
-          setEditingEstimate(null); 
+          setEditingEstimate(null);
         }}
       />
     </div>

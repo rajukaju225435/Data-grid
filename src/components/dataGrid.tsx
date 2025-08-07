@@ -29,10 +29,16 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 interface Props {
   filterBySectionName?: string;
   isEditing?: boolean;
-  showOnlyTable?: boolean; 
+  showOnlyTable?: boolean;
+  hideActions?:any;
 }
 
-const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing ,showOnlyTable , hideActions = false}) => {
+const DataGrid: React.FC<Props> = ({
+  filterBySectionName,
+  isEditing,
+  showOnlyTable,
+  hideActions = false,
+}) => {
   const { groupedItems, loading, error, dispatch } = useGridData();
 
   const {
@@ -135,7 +141,12 @@ const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing ,showOnlyTab
         showAllCheckboxes ? "always-show-checkbox" : "hover-checkbox",
     },
     { headerName: "Item ID", field: "item_id", flex: 2 },
-    { headerName: "Subject", field: "subject", flex: 2, editable: true },
+    {
+      headerName: "Subject",
+      field: "subject",
+      flex: 2,
+      editable: !showOnlyTable,
+    },
     { headerName: "Quantity", field: "quantity", flex: 2 },
     { headerName: "Unit", field: "unit", flex: 2 },
     {
@@ -242,57 +253,53 @@ const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing ,showOnlyTab
   if (error) return <div>Error: {error}</div>;
 
   return (
-    
     <div className="relative ">
-      
-    {/* <div className="relative min-h-screen overflow-hidden"> */}
-
-    {!showOnlyTable && (
-      <div className="mb-8 flex items-center justify-between">
-        <div className="flex items-center gap-2 justify-between w-full">
-          <div className="flex items-center">
-            <MarkupToggle
-              showMarkup={showMarkup}
-              setShowMarkup={setShowMarkup}
-            />
-            <label className="mr-2 pl-2 font-medium">Flag :</label>
-            <input
-              type="text"
-              value={flagInput}
-              onChange={handleInputChange}
-              maxLength={1}
-              placeholder="0 or 1"
-              className="border px-2 py-1 rounded w-24"
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <ZeroItemsFilter
-              selectedFilter={selectedZeroFilter}
-              setSelectedFilter={setSelectedZeroFilter}
-            />
-
-            {!showOnlyTable && (
-            <Suspense
-              fallback={<div className="text-sm text-gray-400">Loading...</div>}
-            >
-              <AddItemDropdown
-                onAddSection={() => {
-                  setSidebarMode("addSection");
-                  setSidebarOpen(true);
-                }}
+      {!showOnlyTable && (
+        <div className="mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-2 justify-between w-full">
+            <div className="flex items-center">
+              <MarkupToggle
+                showMarkup={showMarkup}
+                setShowMarkup={setShowMarkup}
               />
-            </Suspense>)}
+              <label className="mr-2 pl-2 font-medium">Flag :</label>
+              <input
+                type="text"
+                value={flagInput}
+                onChange={handleInputChange}
+                maxLength={1}
+                placeholder="0 or 1"
+                className="border px-2 py-1 rounded w-24"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <ZeroItemsFilter
+                selectedFilter={selectedZeroFilter}
+                setSelectedFilter={setSelectedZeroFilter}
+              />
+
+              {!showOnlyTable && (
+                <Suspense
+                  fallback={
+                    <div className="text-sm text-gray-400">Loading...</div>
+                  }
+                >
+                  <AddItemDropdown
+                    onAddSection={() => {
+                      setSidebarMode("addSection");
+                      setSidebarOpen(true);
+                    }}
+                  />
+                </Suspense>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-)}
+      )}
       <div
         className={`overflow-x-hidden  transition-opacity duration-100 z-[-1]${
           sidebarOpen ? "backdrop-blur-sm" : ""
         }`}
-        // className={`overflow-x-hidden h-screen overflow-scroll transition-opacity duration-100 ${
-        //   sidebarOpen ? "backdrop-blur-sm" : ""
-        // }`}
       >
         {(filterBySectionName
           ? groupedItems.filter((s) => s.section_name === filterBySectionName)
@@ -311,7 +318,7 @@ const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing ,showOnlyTab
           return (
             <div key={section.section_id} className="section-block-wrapper">
               <SectionBlock
-               hideActions={hideActions} 
+                hideActions={hideActions}
                 section={section}
                 index={index}
                 moveSection={moveSection}
@@ -364,7 +371,7 @@ const DataGrid: React.FC<Props> = ({ filterBySectionName, isEditing ,showOnlyTab
           );
         })}
 
-        { !showOnlyTable && displayedSections.length < groupedItems.length && (
+        {!showOnlyTable && displayedSections.length < groupedItems.length && (
           <div
             ref={loadingDivRef}
             className={`text-center py-4 ${

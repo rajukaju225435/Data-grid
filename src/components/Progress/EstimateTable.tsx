@@ -47,7 +47,7 @@ export const EstimateTable: React.FC<EstimateTableProps> = ({
         <tbody className="divide-y divide-gray-200">
           {estimates.map((estimate, index) => {
             const config = statusConfig[estimate.status];
-            const uniqueKey = `${estimate.id}-${index}`; // Ensures uniqueness
+            const uniqueKey = `${estimate.id}-${index}`;
 
             return (
               <tr key={uniqueKey} className="hover:bg-gray-50">
@@ -104,7 +104,7 @@ export const EstimateTable: React.FC<EstimateTableProps> = ({
                       className="p-1 hover:bg-red-50 rounded"
                       title="Delete"
                     >
-                      <Trash2 className="w-4 h-4 text-red-600" />
+                      <Trash2 className="w-4 h-4 text-blue-600" />
                     </button>
                   </div>
                 </td>

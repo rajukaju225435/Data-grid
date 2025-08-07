@@ -8,18 +8,21 @@ import { useDispatch } from "react-redux";
 import { fetchGridDataRequest } from "../../redux/actions";
 
 const Dashboard = () => {
-  const [selectedTable, setSelectedTable] = useState("");
+  const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const dispatch = useDispatch();
   const { groupedItems } = useSelector((state: RootState) => state.grid);
   const tableNames = groupedItems.map((section) => section.section_name);
   console.log(groupedItems);
 
-  useEffect(() => {
-    if (groupedItems.length === 0) {
-      dispatch(fetchGridDataRequest());
-    }
-  }, []);
+ useEffect(() => {
+  if (groupedItems.length === 0) {
+    dispatch(fetchGridDataRequest());
+  } else if (!selectedTable && groupedItems.length > 0) {
+    setSelectedTable(groupedItems[0].section_name);
+  }
+}, [groupedItems]);
+
   const handleEditClick = () => {
     setIsEditing(true);
   };
@@ -38,11 +41,10 @@ const Dashboard = () => {
         <div className="flex items-center gap-4">
           <label className="mr-2 font-semibold">Select Table:</label>
           <select
-            value={selectedTable}
+            value={selectedTable || ""}
             onChange={(e) => setSelectedTable(e.target.value)}
             className="border rounded px-3 py-1 hover:bg-[#000000] hover:text-white transition-colors duration-200"
           >
-            <option value="">-- Select Table --</option>
             {tableNames.map((name, idx) => (
               <option key={idx} value={name}>
                 {name}
@@ -74,7 +76,8 @@ const Dashboard = () => {
 
       {selectedTable && (
         <div className="mt-8">
-          <DataGrid filterBySectionName={selectedTable} isEditing={isEditing} showOnlyTable={true} hideActions={true}/>
+          <DataGrid filterBySectionName={selectedTable} isEditing={isEditing} showOnlyTable
+          ={true} hideActions={true}/>
         </div>
       )}
     </div>
