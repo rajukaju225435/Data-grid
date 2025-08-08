@@ -61,12 +61,17 @@ const EstimatesDashboard: React.FC = () => {
       },
     });
   };
-
   const filteredEstimates = estimates.filter(
     (estimate) =>
-      estimate.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      estimate.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      estimate.estimateNumber.toLowerCase().includes(searchTerm.toLowerCase())
+      (estimate.title?.toLowerCase() ?? "").includes(
+        searchTerm.toLowerCase()
+      ) ||
+      (estimate.customer?.toLowerCase() ?? "").includes(
+        searchTerm.toLowerCase()
+      ) ||
+      (estimate.estimateNumber?.toLowerCase() ?? "").includes(
+        searchTerm.toLowerCase()
+      )
   );
 
   const getStatusStats = () => {
